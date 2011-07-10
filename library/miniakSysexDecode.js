@@ -29,7 +29,13 @@ const ABS_MAX = 7;
 // Required for 'special' conversions of FX parameters
 var fx1Type = 0;
 
-// array of parameters
+/**
+ * Array of parameters
+ *
+ * Dummy is used where multiple UI elements are set
+ * by a single parameter in the sysex dump receeived
+ * from the miniak
+ */
 var params  = [
 /**
  * VOICE
@@ -300,7 +306,7 @@ function loadbang()
 {
     outlet(1, 'clear');
     paramCount = params.length;
-    for (i = 0; i< paramCount; i++) {
+    for (i = 0; i < paramCount; i++) {
         var p = params[i];
         if ('dummy' == p[NAME].slice(0, 5)) {
             // skip dumy parameters
@@ -337,8 +343,8 @@ function decodeProgram()
 
         rawValue = readParamValue(i);
         if (CONVERT < params[i].length) {
-                // Call named conversion routine
-                rawValue = this[params[i][CONVERT]](rawValue, i);
+            // Call named conversion routine
+            rawValue = this[params[i][CONVERT]](rawValue, i);
         }
 
         // Record FX type for reference by parameter conversion routines
