@@ -10,9 +10,6 @@ outlets = 2;
 setoutletassist(0, "parameter values");
 setoutletassist(1, "parameter coll dump");
 
-var decodedContent = new Array();
-
-
 // index lookups for params array
 const NAME    = 0;
 const NRPN    = 1;
@@ -294,11 +291,10 @@ var params  = [
 ['mod::[12]::Offset',      227, -1000, 1000, 1904],
 ];
 
-function bang()
-{
-    loadbang();
-}
-
+/**
+ * Output all params to a coll to allow NRPN lookup
+ * when UI elements edit a parameter
+ */
 function loadbang()
 {
     outlet(1, 'clear');
@@ -313,13 +309,22 @@ function loadbang()
     }
 }
 
+function bang()
+{
+    loadbang();
+}
+
+/**
+ * The main routine decoding routine
+ */
 function decodeProgram()
 {
-    // Parse and decode sysex
     var sysex = arrayfromargs(arguments);
-    var decodedBytes   = byteDecode(sysex);
-    var decodedHeader  = decodedBytes.slice(0, 56);
-    decodedContent     = decodedBytes.slice(56);
+    var decodedBytes       = byteDecode(sysex);
+    var decodedHeader      = decodedBytes.slice(0, 56);
+    var decodedContent     = decodedBytes.slice(56);
+    var decoder            = new paramDecoder(params);
+    decoder.decodedContent = decodedContent;
 
     // Output patch name to display
     var programName     = decodedContent.slice(0, 14);
@@ -338,13 +343,14 @@ function decodeProgram()
             //continue;
         }
 
-        var rawValue = readParamValue(i);
+        // Lookup the value
+        var rawValue = decoder.read(i);
         if (CONVERT < params[i].length) {
             // Call named conversion routine
-            rawValue = this[params[i][CONVERT]](rawValue, i);
+            rawValue = this[params[i][CONVERT]](rawValue, i, decoder);
         }
 
-        // Record FX type for reference by parameter conversion routines
+        // Record FX type for reference by other parameter conversion routines
         if ('fx::Type[1]' === params[i][NAME]) {
             fx1Type = rawValue;
         }
@@ -371,97 +377,117 @@ function byteDecode(sysex)
         }
     }
     return decodedBytes;
-} 
+}
 
-function readParamValue(index)
+/**
+ * Class that can hold copy of parameters and decded content
+ * Used to parse individual parameter values from sysex dump
+ */
+function paramDecoder(fullParameterArray)
 {
-    var p   = params[index];
-    var min = p[MIN];
-    if (ABS_MIN < p.length) { min = p[ABS_MIN]; }
-    var max = p[MAX]
-    if (ABS_MAX < p.length) { max = p[ABS_MAX]; }
-    var byteOffset = parseInt(p[OFFSET] / 8);
-    var bitwidth   = getParamBitwidth(min, max);
-
-    // Read low byte
-    var result = decodedContent[byteOffset];
-
-    if (bitwidth > 8) {
-        // Read high byte (big-endian)
-        bitwidth = 16;
-        result  += 256 * decodedContent[byteOffset - 1];
-    } else if (bitwidth < 8) {
-        // All negative params are either 8 or 16 bits
-        if (min < 0) {
-            bitwidth = 8;
-        } else {
-            // Shift and mask param in bitfield
-            result >>= (p[OFFSET] % 8);
-            result  &= ((1 << bitwidth) - 1);
+    this.params         = fullParameterArray;
+    this.decodedContent = new Array();
+    
+    this.read = function (index)
+    {
+        var p   = this.params[index];
+        var min = p[MIN];
+        if (ABS_MIN < p.length) { min = p[ABS_MIN]; }
+        var max = p[MAX]
+        if (ABS_MAX < p.length) { max = p[ABS_MAX]; }
+        var byteOffset = parseInt(p[OFFSET] / 8);
+        var bitwidth   = this.getParamBitwidth(min, max);
+    
+        // Read low byte
+        var result = this.decodedContent[byteOffset];
+    
+        if (bitwidth > 8) {
+            // Read high byte (big-endian)
+            bitwidth = 16;
+            result  += 256 * this.decodedContent[byteOffset - 1];
+        } else if (bitwidth < 8) {
+            // All negative params are either 8 or 16 bits
+            if (min < 0) {
+                bitwidth = 8;
+            } else {
+                // Shift and mask param in bitfield
+                result >>= (p[OFFSET] % 8);
+                result  &= ((1 << bitwidth) - 1);
+            }
         }
+    
+        // Extend sign bit if negative.
+        if (min < 0 && (result & (1 << (bitwidth - 1)))) {
+            result = -(-result & ((1 << bitwidth) - 1));
+        }
+    
+        // Clip to valid range.
+        if (result < min) { result = min; }
+        if (result > max) { result = max; }    
+    
+        return result;
     }
-
-    // Extend sign bit if negative.
-    if (min < 0 && (result & (1 << (bitwidth - 1)))) {
-        result = -(-result & ((1 << bitwidth) - 1));
+    
+    this.getParamBitwidth = function (min, max) 
+    {
+        var biggest = ((max + 1) > (-min) ? (max + 1) : (-min));
+        var bits = parseInt((Math.log(biggest) / Math.log(2)) + 0.99999);
+        if (min < 0) {
+            bits ++;
+        }
+        return bits;
     }
-
-    // Clip to valid range.
-    if (result < min) { result = min; }
-    if (result > max) { result = max; }    
-
-    return result;
 }
 
-function getParamBitwidth(min, max)
-{
-    var biggest = ((max + 1) > (-min) ? (max + 1) : (-min));
-    var bits = parseInt((Math.log(biggest) / Math.log(2)) + 0.99999);
-    if (min < 0) {
-        bits ++;
-    }
-    return bits;
-}
-
-function convertOscTranspose (rawValue, index)
+/**
+ * Conversion routines
+ *
+ * Called by nmaed lookup when iterating through params array
+ * Each function MUST have the same arguments
+ *
+ * @param integer      rawValue
+ * @param integer      index
+ * @param paramDecoder decoder
+ */
+function convertOscTranspose (rawValue, index, decoder)
 {
     return rawValue - 7;
 }
 
-function convertOscOctave (rawValue, index)
+function convertOscOctave (rawValue, index, decoder)
 {
     return rawValue - 3;
 }
 
-function convertPitchWheel (rawValue, index)
+function convertPitchWheel (rawValue, index, decoder)
 {
     return Math.abs(rawValue - 1);
 }
 
-function addPrevious (rawValue, index)
-{
-    return rawValue + 1 - readParamValue(index - 1);
+function addPrevious (rawValue, index, decoder)
+{    
+    return rawValue + 1 - decoder.read(index - 1);
 }
 
-function convertPortamento (rawValue, index)
+function convertPortamento (rawValue, index, decoder)
 {
     var lookup = [0, 2, 1];
-    return lookup[addPrevious(rawValue, index)];
+    return lookup[addPrevious(rawValue, index, decoder)];
 }
 
-function convertOscSync (rawValue, index)
+function convertOscSync (rawValue, index, decoder)
 {
     var lookup = [3, 4, 1, 2, 0];
-    var sum    = rawValue + (2 * readParamValue(index - 1)) + (4 * readParamValue(index - 2));
+    var sum    = rawValue + (2 * decoder.read(index - 1)) + (4 * decoder.read(index - 2));
     return lookup[sum];
 }
 
-function convertFmType (rawValue, index)
+function convertFmType (rawValue, index, decoder)
 {
-    return (3 * rawValue) + (2 - readParamValue(index - 1));
+    return (3 * rawValue) + (2 - decoder.read(index - 1));
 }
 
-function convertFilter (rawValue, index)
+function convertFilter (rawValue, index, decoder)
 {
     var lookup = [
         0, 3, 1, 7, 11,
@@ -472,18 +498,18 @@ function convertFilter (rawValue, index)
     return lookup[rawValue];
 }
 
-function convertFxMix (rawValue, index)
+function convertFxMix (rawValue, index, decoder)
 {
     return parseInt(rawValue / 2);
 }
 
-function convertFx1Type (rawValue, index)
+function convertFx1Type (rawValue, index, decoder)
 {
     var lookup = [0, 4, 5, 2, 3, 1, 6];
     return lookup[rawValue];
 }
 
-function convertFx1F (rawValue, index)
+function convertFx1F (rawValue, index, decoder)
 {
     if ((0 == fx1Type)
         || (4 == fx1Type)
@@ -494,7 +520,7 @@ function convertFx1F (rawValue, index)
     return 1 - rawValue;
 }
 
-function convertFx1G (rawValue, index)
+function convertFx1G (rawValue, index, decoder)
 {
     if (4 == fx1Type) {
         return 1 - rawValue;
@@ -502,34 +528,34 @@ function convertFx1G (rawValue, index)
     return rawValue;
 }
 
-function convertFx1H (rawValue, index)
+function convertFx1H (rawValue, index, decoder)
 {
     return 24 - rawValue;
 }
 
-function convertEnvLoop (rawValue, index)
+function convertEnvLoop (rawValue, index, decoder)
 {
     var lookup = [1, 2, 3, 0];
     return lookup[rawValue];
 }
 
-function convertLfoTempoSync (rawValue, index)
+function convertLfoTempoSync (rawValue, index, decoder)
 {
     return 1 - rawValue;
 }
 
-function convertLfoReset (rawValue, index)
+function convertLfoReset (rawValue, index, decoder)
 {
     var lookup = [0, 1, 2, 3, 6, 4, 5];
     return lookup[rawValue];
 }
 
-function convertLfoRateSynced (rawValue, index)
+function convertLfoRateSynced (rawValue, index, decoder)
 {
     return 24 - rawValue;
 }
 
-function convertSHInput (rawValue, index)
+function convertSHInput (rawValue, index, decoder)
 {
     var lookup = [
         [0, 34], [1,35], [2,5], [3,23], [4,24],
@@ -560,7 +586,7 @@ function convertSHInput (rawValue, index)
     return lookup[rawValue][1];
 }
 
-function convertTrackingInput (rawValue, index)
+function convertTrackingInput (rawValue, index, decoder)
 {
     var lookup = [
         [0, 33], [1,34], [2,5], [3,23], [4,24],
@@ -591,7 +617,7 @@ function convertTrackingInput (rawValue, index)
     return lookup[rawValue][1];
 }
 
-function convertModSource (rawValue, index)
+function convertModSource (rawValue, index, decoder)
 {
     var lookup = [
         [0, 0], [1,36], [2,37], [3,6], [4,24],
@@ -622,7 +648,7 @@ function convertModSource (rawValue, index)
     return lookup[rawValue][1];
 }
 
-function convertModDest (rawValue, index)
+function convertModDest (rawValue, index, decoder)
 {
     var lookup = [
         [0, 0],   [1,1],    [2,4],    [3,7],    [4,10],
@@ -652,7 +678,7 @@ function convertModDest (rawValue, index)
     return lookup[rawValue][1];
 }
 
-function dummy (rawValue, index)
+function dummy (rawValue, index, decoder)
 {
     return rawValue;
 }
