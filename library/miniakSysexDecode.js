@@ -1,11 +1,4 @@
-/**
- * for LIST parameters
- *
- * min and max are inferred from the index of the first/last elements in the list
- * the 'result' calculated by the read_param routine gives the index in the list
- * the final value can be read from the list using this index
- */
-
+/******SETUP******/
 outlets = 2;
 setoutletassist(0, "parameter values");
 setoutletassist(1, "parameter coll dump");
@@ -96,7 +89,7 @@ var params  = [
 ['pre::RingModBalance', 38, -50,  50,  424],
 ['pre::NoiseBalance',   39, -50,  50,  440],
 // refactored:['pre::ExtInBalance',   40, -100, 100, 432],
-['pre::SeriesLevel',    41, 0,    100, 448],
+// refactored:['pre::SeriesLevel',    41, 0,    100, 448],
 ['pre::NoiseType',      42, 0,    1,   463],
 /**
  * EXT IN
@@ -105,13 +98,16 @@ var params  = [
 ['ext::Balance', 40, -100, 100, 432],
 /**
  * FILTERS
- */ 
+ */
+['filter::SeriesLevel',              41, 0,    100, 448],
 ['filter::[1]::Type',                43,  0,    20,  608, 'convertFilter'],
 ['filter::[1]::Frequency',           44,  0,    920, 512],
 ['filter::[1]::Resonance',           45,  0,    100, 536],
 ['filter::[1]::Keytrack',            46,  -100, 200, 576],
 ['filter::[1]::EnvAmount',           47,  -100, 100, 552],
-['filter::[1]::Filter1Sign',         61,  0,    1,   696],
+['filter::[1]::Sign',                61,  0,    1,   696],
+['filter::[1]::Level',               54,  0,    100, 664],
+['filter::[1]::Pan',                 57,  -100, 100, 704],
 ['filter::[2]::Offset',              48,  0,    20,  600],
 ['filter::[2]::Type',                49,  0,    20,  616, 'convertFilter'],
 ['filter::[2]::Frequency::Absolute', 50,  0,    920, 528],
@@ -119,40 +115,45 @@ var params  = [
 ['filter::[2]::Resonance',           51,  0,    100, 544],
 ['filter::[2]::Keytrack',            52,  -100, 200, 592],
 ['filter::[2]::EnvAmount',           53,  -100, 100, 560],
+['filter::[2]::Level',               55,  0,    100, 672],
+['filter::[2]::Pan',                 58,  -100, 100, 712],
+['filter::PreFilterLevel',           56,  0,    100, 680],
+['filter::PreFilterPan',             59,  -100, 100, 720],
+['filter::PreFilterSource',          60,  0,    6,   688],
 /**
  * POST MIX
  */ 
-['post::Filter1Level',    54, 0,    100, 664],
-['post::Filter2Level',    55, 0,    100, 672],
-['post::PreFilterLevel',  56, 0,    100, 680],
-['post::Filter1Pan',      57, -100, 100, 704],
-['post::Filter2Pan',      58, -100, 100, 712],
-['post::PreFilterPan',    59, -100, 100, 720],
-['post::PreFilterSource', 60, 0,    6,   688],
+// refactored:['post::Filter1Level',    54, 0,    100, 664],
+// refactored:['post::Filter2Level',    55, 0,    100, 672],
+// refactored:['post::PreFilterLevel',  56, 0,    100, 680],
+// refactored:['post::Filter1Pan',      57, -100, 100, 704],
+// refactored:['post::Filter2Pan',      58, -100, 100, 712],
+// refactored:['post::PreFilterPan',    59, -100, 100, 720],
+// refactored:['post::PreFilterSource', 60, 0,    6,   688],
 // refactored:['post::Filter1Sign', 61, 0, 1, 696],
-['out::DriveType',        62, 0,    6,   776],
-['out::DriveLevel',       63, 0,    100, 768],
-['out::ProgramLevel',     64, 0,    100, 784],
 /**
- * FX
+ * OUTPUT & FX
  */ 
-['out::FxMix',     321, -50,  50,  2240, 'convertFxMix', -100, 100],
-['out::FxBalance', 230, -50,  50,  2312],
-['fx::Type[1]',    231, 0,    6,   2232, 'convertFx1Type'],
-['fx::[1]::A',     232, -100, 100, 2248],
-['fx::[1]::B',     233, 0,    100, 2256],
-['fx::[1]::C',     234, 0,    127, 2264, 'dummy'],
-['fx::[1]::D',     235, -100, 100, 2272],
-['fx::[1]::E',     236, 0,    3,   2280],
-['fx::[1]::F',     237, 0,    5,   2288, 'convertFx1F'],
-['fx::[1]::G',     238, 0,    100, 2296, 'convertFx1G'],
-['fx::[1]::H',     239, 0,    24,  2304, 'convertFx1H'],
-['fx::Type[2]',    245, 0,    6,   2320],
-['fx::[2]::A',     246, -100, 680, 736],
-['fx::[2]::B',     247, 0,    100, 752],
-['fx::[2]::C',     248, 0,    127, 1088],
-['fx::[2]::D',     249, -100, 100, 1104],
-['fx::[2]::E',     250, 0,    24,  1112],
+['out::DriveType',    62, 0,    6,   776],
+['out::DriveLevel',   63, 0,    100, 768],
+['out::ProgramLevel', 64, 0,    100, 784],
+['out::FxMix',        321, -50,  50,  2240, 'convertFxMix', -100, 100],
+['out::FxBalance',    230, -50,  50,  2312],
+['fx::Type[1]',       231, 0,    6,   2232, 'convertFx1Type'],
+['fx::[1]::A',        232, -100, 100, 2248],
+['fx::[1]::B',        233, 0,    100, 2256],
+['fx::[1]::C',        234, 0,    127, 2264, 'dummy'],
+['fx::[1]::D',        235, -100, 100, 2272],
+['fx::[1]::E',        236, 0,    3,   2280],
+['fx::[1]::F',        237, 0,    5,   2288, 'convertFx1F'],
+['fx::[1]::G',        238, 0,    100, 2296, 'convertFx1G'],
+['fx::[1]::H',        239, 0,    24,  2304, 'convertFx1H'],
+['fx::Type[2]',       245, 0,    6,   2320],
+['fx::[2]::A',        246, -100, 680, 736],
+['fx::[2]::B',        247, 0,    100, 752],
+['fx::[2]::C',        248, 0,    127, 1088],
+['fx::[2]::D',        249, -100, 100, 1104],
+['fx::[2]::E',        250, 0,    24,  1112],
 /**
  * ENVELOPES
  */ 
