@@ -10,9 +10,6 @@ outlets = 2;
 setoutletassist(0, "parameter values");
 setoutletassist(1, "parameter coll dump");
 
-var sysex          = new Array();
-var decodedHeader  = new Array();
-var decodedBytes   = new Array();
 var decodedContent = new Array();
 
 
@@ -319,10 +316,10 @@ function loadbang()
 function decodeProgram()
 {
     // Parse and decode sysex
-    sysex = arrayfromargs(arguments);
-    byteDecode();
-    decodedHeader  = decodedBytes.slice(0, 56);
-    decodedContent = decodedBytes.slice(56);
+    var sysex = arrayfromargs(arguments);
+    var decodedBytes   = byteDecode(sysex);
+    var decodedHeader  = decodedBytes.slice(0, 56);
+    decodedContent     = decodedBytes.slice(56);
 
     // Output patch name to display
     var programName     = decodedContent.slice(0, 14);
@@ -337,11 +334,11 @@ function decodeProgram()
     for (i = 0; i < paramCount; i++) {
 
         if ('dummy' == params[i][NAME].slice(0, 5)) {
-            // skip dumy parameters
+            // skip dummy parameters
             //continue;
         }
 
-        rawValue = readParamValue(i);
+        var rawValue = readParamValue(i);
         if (CONVERT < params[i].length) {
             // Call named conversion routine
             rawValue = this[params[i][CONVERT]](rawValue, i);
@@ -355,10 +352,16 @@ function decodeProgram()
     }
 }
 
-function byteDecode()
+/**
+ * Decode the raw sysex dump received from miniak
+ *
+ * @param  array sysex
+ * @return array
+ */
+function byteDecode(sysex)
 {
-    decodedBytes = Array();
-    var numberBytes = sysex.length / 8;
+    var decodedBytes = Array();
+    var numberBytes  = sysex.length / 8;
     for (var byteCount = 0; byteCount < numberBytes; byteCount++) {
         var msbs = sysex[byteCount * 8];
         for (var i = 1; i < 8; i++) {
@@ -367,6 +370,7 @@ function byteDecode()
             decodedBytes.push(decodedByte);
         }
     }
+    return decodedBytes;
 } 
 
 function readParamValue(index)
