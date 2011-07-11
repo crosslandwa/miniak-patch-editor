@@ -29,6 +29,10 @@ var fx1Type = 0;
  * Dummy is used where multiple UI elements are set
  * by a single parameter in the sysex dump receeived
  * from the miniak
+ *
+ * refactored: means element has been moved out of order with
+ * regards parameter order in Miniak, but into a logical UI
+ * grouping within the application
  */
 var params  = [
 /**
@@ -59,35 +63,46 @@ var params  = [
 ['osc::[1]::Transpose', 14, -7,   7,   268, 'convertOscTranspose', 0, 15],
 ['osc::[1]::Pitch',     15, -999, 999, 200],
 ['osc::[1]::PWhlRange', 16, 0,    12,  274],
+['osc::[1]::Level',     29, 0,    100, 360],
+['osc::[1]::Balance',   35, -50,  50,  400],
 ['osc::[2]::Waveform',  17, 0,    2,   284],
 ['osc::[2]::Waveshape', 18, -100, 100, 248],
 ['osc::[2]::Octave',    19, -3,   3,   296, 'convertOscOctave',    0, 6],
 ['osc::[2]::Transpose', 20, -7,   7,   300, 'convertOscTranspose', 0, 15],
 ['osc::[2]::Pitch',     21, -999, 999, 216],
 ['osc::[2]::PWhlRange', 22, 0,    12,  312],
+['osc::[2]::Level',     30, 0,    100, 368],
+['osc::[2]::Balance',   36, -50,  50,  408],
 ['osc::[3]::Waveform',  23, 0,    2,   286],
 ['osc::[3]::Waveshape', 24, -100, 100, 256],
 ['osc::[3]::Octave',    25, -3,   3,   304, 'convertOscOctave',    0, 6],
 ['osc::[3]::Transpose', 26, -7,   7,   308, 'convertOscTranspose', 0, 15],
 ['osc::[3]::Pitch',     27, -999, 999, 232],
 ['osc::[3]::PWhlRange', 28, 0,    12,  316],
+['osc::[3]::Level',     31, 0,    100, 376],
+['osc::[3]::Balance',   37, -50,  50,  416],
 /**
  * PRE MIX
  */ 
-['pre::OSC1Level',      29, 0,    100, 360],
-['pre::OSC2Level',      30, 0,    100, 368],
-['pre::OSC3Level',      31, 0,    100, 376],
+// refactored:['pre::OSC1Level',      29, 0,    100, 360],
+// refactored:['pre::OSC2Level',      30, 0,    100, 368],
+// refactored:['pre::OSC3Level',      31, 0,    100, 376],
 ['pre::RingModLevel',   32, 0,    100, 384],
 ['pre::NoiseLevel',     33, 0,    100, 456],
-['pre::ExtInLevel',     34, 0,    100, 392],
-['pre::OSC1Balance',    35, -50,  50,  400],
-['pre::OSC2Balance',    36, -50,  50,  408],
-['pre::OSC3Balance',    37, -50,  50,  416],
+// refactored:['pre::ExtInLevel',     34, 0,    100, 392],
+// refactored:['pre::OSC1Balance',    35, -50,  50,  400],
+// refactored:['pre::OSC2Balance',    36, -50,  50,  408],
+// refactored:['pre::OSC3Balance',    37, -50,  50,  416],
 ['pre::RingModBalance', 38, -50,  50,  424],
 ['pre::NoiseBalance',   39, -50,  50,  440],
-['pre::ExtInBalance',   40, -100, 100, 432],
+// refactored:['pre::ExtInBalance',   40, -100, 100, 432],
 ['pre::SeriesLevel',    41, 0,    100, 448],
 ['pre::NoiseType',      42, 0,    1,   463],
+/**
+ * EXT IN
+ */
+['ext::Level',   34, 0,    100, 392],
+['ext::Balance', 40, -100, 100, 432],
 /**
  * FILTERS
  */ 
@@ -114,8 +129,7 @@ var params  = [
 ['post::Filter2Pan',      58, -100, 100, 712],
 ['post::PreFilterPan',    59, -100, 100, 720],
 ['post::PreFilterSource', 60, 0,    6,   688],
-// This moved to filter section
-//['post::Filter1Sign', 61, 0, 1, 696],
+// refactored:['post::Filter1Sign', 61, 0, 1, 696],
 ['out::DriveType',        62, 0,    6,   776],
 ['out::DriveLevel',       63, 0,    100, 768],
 ['out::ProgramLevel',     64, 0,    100, 784],
@@ -442,7 +456,7 @@ function paramDecoder(fullParameterArray)
 /**
  * Conversion routines
  *
- * Called by nmaed lookup when iterating through params array
+ * Called by named lookup when iterating through params array
  * Each function MUST have the same arguments
  *
  * @param integer      rawValue
