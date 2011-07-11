@@ -1,7 +1,10 @@
 /******SETUP******/
-outlets = 2;
-setoutletassist(0, "parameter values");
-setoutletassist(1, "parameter coll dump");
+autowatch = 1;
+outlets   = 2;
+const PARAMETER = 0;
+const LOOKUP    = 1;
+setoutletassist(PARAMETER, "parameter values");
+setoutletassist(LOOKUP, "parameter coll dump");
 
 // index lookups for params array
 const NAME    = 0;
@@ -312,15 +315,15 @@ var params  = [
  */
 function loadbang()
 {
-    outlet(1, 'clear');
+    outlet(LOOKUP, 'clear');
     paramCount = params.length;
     for (i = 0; i < paramCount; i++) {
         var p = params[i];
         if ('dummy' == p[NAME].slice(0, 5)) {
-            // skip dumy parameters
+            // skip dummy parameters
             continue;
         }
-        outlet (1, 'store', p[NAME], p[NRPN], p[MIN], p[MAX]);
+        outlet (LOOKUP, 'store', p[NAME], p[NRPN], p[MIN], p[MAX]);
     }
 }
 
@@ -369,7 +372,7 @@ function decodeProgram()
         if ('fx::Type[1]' === params[i][NAME]) {
             fx1Type = rawValue;
         }
-        outlet(0, params[i][NAME], rawValue);
+        outlet(PARAMETER, params[i][NAME], rawValue);
     }
 }
 
