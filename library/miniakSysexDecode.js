@@ -333,7 +333,9 @@ function bang()
 }
 
 /**
- * The main routine decoding routine
+ * Takes a sysex dump from the Miniak, parses it, decodes
+ * and updates the value of every parameter UI element in the
+ * patch with its corresponding value from the Miniak program
  */
 function decodeProgram()
 {
