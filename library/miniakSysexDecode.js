@@ -145,7 +145,7 @@ var params  = [
 ['fx::Type[1]',       231, 0,    6,   2232, 'convertFx1Type'],
 ['fx::[1]::A',        232, -100, 100, 2248],
 ['fx::[1]::B',        233, 0,    100, 2256],
-['fx::[1]::C',        234, 0,    127, 2264, 'dummy'],
+['fx::[1]::C',        234, 0,    127, 2264],
 ['fx::[1]::D',        235, -100, 100, 2272],
 ['fx::[1]::E',        236, 0,    3,   2280],
 ['fx::[1]::F',        237, 0,    5,   2288, 'convertFx1F'],
@@ -696,9 +696,4 @@ function convertModDest (rawValue, index, decoder)
         [110,10], [111,6],  [112,6],  [113, 0], [114, 7]
     ];
     return lookup[rawValue][1];
-}
-
-function dummy (rawValue, index, decoder)
-{
-    return rawValue;
 }
