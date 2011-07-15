@@ -76,12 +76,14 @@ function updateGate(index, value)
 }
 
 /**
- * Take a value/name pair, and output as a name/value
- * pair if it belongs in a group of parameters that
+ * Take a value/min/max/name list, and outputs
+ * if the name belongs in a group of parameters that
  * are allowed to be randomised
  *
  * @param integer value
- * @param string pattrName
+ * @param integer min
+ * @param integer max
+ * @param string  pattrName
  */
 function gateParameter (value, min, max, pattrName)
 {
