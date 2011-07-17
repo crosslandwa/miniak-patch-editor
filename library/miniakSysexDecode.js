@@ -8,7 +8,18 @@ setoutletassist(PARAMETER, "parameter values");
 setoutletassist(LOOKUP, "parameter coll dump");
 setoutletassist(COMPLETE, "bang when sysex decode complete");
 
-// index lookups for params array
+/**
+ * index lookups for params array
+ *
+ * NAME    - Editor/pattr name of the parameter
+ * NRPN    - CC identifier required when sending realtime MIDI to Miniak
+ * MIN     - minimum allowed parameter value
+ * MAX     - maximum allowed parameter value
+ * OFFSET  - location of parameter value within the sysex dump
+ * CONVERT - Named conversion routine to change from sysex value to Editor value
+ * ABS_MIN - Normalised minimum allowed parameter value (where required)
+ * ABS_MAX - Normalised maximum allowed parameter value (where required)
+ */
 const NAME    = 0;
 const NRPN    = 1;
 const MIN     = 2;
@@ -32,6 +43,9 @@ var fx1Type = 0;
  * refactored: means element has been moved out of order with
  * regards parameter order in the Miniak, but into a logical UI
  * grouping within the Editor
+ *
+ * NRPN   - the CC identifier required when sending realtime MIDI to Miniak
+ * OFFSET - location of parameter value within the sysex dump
  */
 var params  = [
 /**
