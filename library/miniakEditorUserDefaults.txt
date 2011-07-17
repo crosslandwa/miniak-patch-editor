@@ -1,0 +1,1 @@
+patchesFolderPath, "WACDRIVE:/Dropbox/Max-Patches/wac5/MiniakEditor [Apr2011]/patches/";midiOutput, "from MaxMSP 1";midiInput, "to MaxMSP 1";
