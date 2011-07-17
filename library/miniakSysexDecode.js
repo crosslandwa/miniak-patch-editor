@@ -1,10 +1,12 @@
 /******SETUP******/
 autowatch = 1;
-outlets   = 2;
+outlets   = 3;
 const PARAMETER = 0;
 const LOOKUP    = 1;
+const COMPLETE  = 2;
 setoutletassist(PARAMETER, "parameter values");
 setoutletassist(LOOKUP, "parameter coll dump");
+setoutletassist(COMPLETE, "bang when sysex decode complete");
 
 // index lookups for params array
 const NAME    = 0;
@@ -22,13 +24,14 @@ var fx1Type = 0;
 /**
  * Array of parameters
  *
- * Dummy is used where multiple UI elements are set
- * by a single parameter in the sysex dump receeived
- * from the miniak
+ * Dummy is used where a single parameter is encoded by multiple
+ * bytes in the SYSEX dump received from the Miniak. The multiple bytes must
+ * be combined into one single value that is used to update the corresponding
+ * UI element in the Editor
  *
  * refactored: means element has been moved out of order with
- * regards parameter order in Miniak, but into a logical UI
- * grouping within the application
+ * regards parameter order in the Miniak, but into a logical UI
+ * grouping within the Editor
  */
 var params  = [
 /**
@@ -354,13 +357,12 @@ function decodeProgram()
     }
     messnamed ('programName', programNameText);
 
-    // Extract parameter values from sysex
     paramCount = params.length;
     for (i = 0; i < paramCount; i++) {
 
         if ('dummy' == params[i][NAME].slice(0, 5)) {
             // skip dummy parameters
-            //continue;
+            continue;
         }
 
         // Lookup the value
@@ -376,6 +378,7 @@ function decodeProgram()
         }
         outlet(PARAMETER, params[i][NAME], rawValue);
     }
+    outlet(COMPLETE, 'bang');
 }
 
 /**
@@ -408,6 +411,9 @@ function paramDecoder(fullParameterArray)
     this.params         = fullParameterArray;
     this.decodedContent = new Array();
     
+    /**
+     * This is copied fairly verbatim from the Alesis ruby decoder/encoder
+     */
     this.read = function (index)
     {
         var p   = this.params[index];
@@ -586,7 +592,7 @@ function convertSHInput (rawValue, index, decoder)
         [25,19], [26,20], [27,30], [28,29], [29,27],
         [30,26], [31,32], [32,33], [33,28], [34,0],
         [35,36], [36,37], [37,38], [38,39], [39,40],
-        // Can't be bothered remapping all the CCs at the moment
+        // TODO: remap all the rest of the CCs
         [40,4], [41,4], [42,4], [43,4], [44,4],
         [45,4], [46,4], [47,4], [48,4], [49,4],
         [50,5], [51,5], [52,5], [53,5], [54,5],
@@ -617,7 +623,7 @@ function convertTrackingInput (rawValue, index, decoder)
         [25,19], [26,20], [27,31], [28,30], [29,29],
         [30,27], [31,26], [32,28], [33,0], [34,35],
         [35,36], [36,37], [37,38], [38,39], [39,40],
-        // Can't be bothered remapping all the CCs at the moment
+        // TODO: remap all the rest of the CCs
         [40,4], [41,4], [42,4], [43,4], [44,4],
         [45,4], [46,4], [47,4], [48,4], [49,4],
         [50,5], [51,5], [52,5], [53,5], [54,5],
@@ -648,7 +654,7 @@ function convertModSource (rawValue, index, decoder)
         [25,17], [26,20], [27,21], [28,32], [29,31],
         [30,30], [31,28], [32,27], [33,34], [34,35],
         [35,29], [36,1], [37,38], [38,39], [39,40],
-        // Can't be bothered remapping all the CCs at the moment
+        // TODO: remap all the rest of the CCs
         [40,4], [41,4], [42,4], [43,4], [44,4],
         [45,4], [46,4], [47,4], [48,4], [49,4],
         [50,5], [51,5], [52,5], [53,5], [54,5],
@@ -687,13 +693,6 @@ function convertModDest (rawValue, index, decoder)
         [65,63],  [66,64],  [67,65],  [68,66],  [69,67],
         [70,68],  [71,69],  [72,70],  [73,7],   [74,45],
         [75,46],  [76,47],  [77,48],  [78,49],  [79,2],
-        [80,8],   [81,8],   [82,8],   [83,8],   [84,8],
-        [85,8],   [86,8],   [87,8],   [88,8],   [89,8],
-        [90,9],   [91,9],   [92,9],   [93,9],   [94,9],
-        [95,9],   [96,9],   [97,9],   [98,9],   [99,9],
-        [100,10], [101,10], [102,10], [103,10], [104,10],
-        [105,10], [106,10], [107,10], [108,10], [109,10],
-        [110,10], [111,6],  [112,6],  [113, 0], [114, 7]
     ];
     return lookup[rawValue][1];
 }
