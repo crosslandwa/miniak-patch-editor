@@ -27,6 +27,6 @@ function bang()
     }
     
     if (max.os == "macintosh") {
-        outlet (LOOKUP, max.apppath + "/MiniakEditor.app/Contents/support/patchesFolderPath.txt");
+        outlet (LOOKUP, max.apppath + "/Miniak Editor.app/Contents/support/miniakEditorUserDefaults.txt");
     }
 } 
