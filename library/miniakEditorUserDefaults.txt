@@ -1,1 +1,1 @@
-patchesFolderPath, MacHd:/Users/willyc/Desktop/patches/;midiOutput, "from MaxMSP 2";midiInput, "to MaxMSP 2";
+patchesFolderPath, MacHd:/Users/willyc/Desktop/patches/;midiOutput, "AudioFire4 (2934) Plug 1";midiInput, "AudioFire4 (2934) Plug 1";
