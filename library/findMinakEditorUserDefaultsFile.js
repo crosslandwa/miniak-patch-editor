@@ -22,7 +22,7 @@ function bang()
     }
 
     if (max.os == "windows") {
-        outlet (LOOKUP, max.apppath + "/patches");
+        outlet (LOOKUP, max.apppath + "/support/miniakEditorUserDefaults.txt");
         return;
     }
     
