@@ -1,1 +1,1 @@
-patchesFolderPath, "WACDRIVE:/Dropbox/Max-Patches/wac5/MiniakEditor [Apr2011]/patches/";midiOutput, "AudioFire4 (2934) Plug 1";midiInput, "AudioFire4 (2934) Plug 1";
+patchesFolderPath, "WACDRIVE:/Dropbox/Max-Patches/wac5/MiniakEditor [Apr2011]/patches/";midiOutput, "AU DLS Synth 1";midiInput, "IAC Driver Bus 1";
