@@ -17,7 +17,7 @@ function bang()
         var patchesFolderPath = this.patcher.parentpatcher.filepath;
         var topLevelPatchName = this.patcher.parentpatcher.name;
         patchesFolderPath  = patchesFolderPath.replace(topLevelPatchName + '.maxpat', '');
-        outlet (LOOKUP, patchesFolderPath + '/library/miniakEditorUserDefaults.txt');
+        outlet (LOOKUP, patchesFolderPath + '/miniakEditorUserDefaults.txt');
         return;
     }
 
