@@ -6,7 +6,7 @@
  * MIDI input port
  * MIDI output port
  */
-autowatch    = 1;
+autowatch    = 1;   
 outlets      = 1;
 const LOOKUP = 0;
 setoutletassist(LOOKUP, "Location of text file used to store/recall user defined defaults");
@@ -27,6 +27,7 @@ function bang()
     }
     
     if (max.os == "macintosh") {
-        outlet (LOOKUP, max.apppath + "/Miniak Patch Editor.app/Contents/support/miniakEditorUserDefaults.txt");
+        var topLevelPatchName = this.patcher.parentpatcher.parentpatcher.name;
+        outlet (LOOKUP, max.apppath + "/" + topLevelPatchName + ".app/Contents/support/miniakEditorUserDefaults.txt");
     }
 } 
