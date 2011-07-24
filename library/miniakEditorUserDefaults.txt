@@ -1,1 +1,1 @@
-midiInput, "to MaxMSP 2";midiOutput, "AU DLS Synth 1";patchesFolderPath, WACDRIVE:/Dropbox/Max-Patches/wac5/MiniakPatchEditor/patches/;
+midiInput, "AudioFire4 (2934) Plug 1";midiOutput, "AudioFire4 (2934) Plug 1";patchesFolderPath, WACDRIVE:/Dropbox/Max-Patches/wac5/MiniakPatchEditor/patches/;
