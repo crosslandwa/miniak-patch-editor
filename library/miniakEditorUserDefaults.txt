@@ -1,1 +1,1 @@
-midiInput, "AudioFire4 (2934) Plug 1";midiOutput, "AudioFire4 (2934) Plug 1";patchesFolderPath, WACDRIVE:/Dropbox/Max-Patches/wac5/MiniakPatchEditor/patches/;
+midiports::midiFromMiniak, "to MaxMSP 1";midiports::midiToMiniak, "from MaxMSP 2";patchesFolderPath, WACDRIVE:/Dropbox/Max-Patches/wac5/MiniakPatchEditor/patches/;
