@@ -9,6 +9,10 @@ setoutletassist (ABSOLUTE, "Absolute pattr messages")
 setoutletassist (SCALED, "Scaled pattr essages (0 -> 1)")
 const NOT_TRANSFORMED = '__NOT_TRANSFORMED__';
 
+var pattrAddress           = NOT_TRANSFORMED;
+var lastOscAddressAsString = NOT_TRANSFORMED;
+var outletNum              = ABSOLUTE;
+
 /**
  * Take an OSC address and some data
  *
@@ -18,32 +22,45 @@ const NOT_TRANSFORMED = '__NOT_TRANSFORMED__';
 function anything()
 {
     var oscData = arrayfromargs(messagename, arguments);
-    var address = oscData.shift().split("/");
-    address.shift();
+    var oscAddress = oscData.shift().split("/");
+    oscAddress.shift();
     
-    var outletNum = ABSOLUTE;
-    if (address[0] == 'scaled') {
-        address.shift();
+    // *******AVOID RECALCULATING PATTR ADDRESS FOR REPEATED OSC ADDRESS*****
+    var newOscAddressAsString = oscAddress.toString();
+    if (newOscAddressAsString == lastOscAddressAsString) {
+        outlet (
+            outletNum,
+            pattrAddress,
+            oscData
+        );
+        return;
+    }
+    lastOscAddressAsString = newOscAddressAsString;
+    // *******AVOID RECALCULATING PATTR ADDRESS FOR REPEATED OSC ADDRESS*****
+    
+    outletNum = ABSOLUTE;
+    if (oscAddress[0] == 'scaled') {
+        oscAddress.shift();
         outletNum = SCALED;
     }
 
-    var pattrAddress = NOT_TRANSFORMED;
+    pattrAddress = NOT_TRANSFORMED;
 
     if ((pattrAddress == NOT_TRANSFORMED)
-        && (address.indexOf('fx') >= 0)
-        && (address.indexOf('Type') >= 0)
+        && (oscAddress.indexOf('fx') >= 0)
+        && (oscAddress.indexOf('Type') >= 0)
     ) {
-        pattrAddress = address.join('::').replace(/::(\d+)/g, "[$1]");
+        pattrAddress = oscAddress.join('::').replace(/::(\d+)/g, "[$1]");
     }
     
     if ((pattrAddress == NOT_TRANSFORMED)
-        && (address.indexOf('s-h') >= 0)
+        && (oscAddress.indexOf('s-h') >= 0)
     ) {
-        pattrAddress = address.join('::').replace(/::(\d+)/g, "[$1]").replace(/s-h/, "s/h");
+        pattrAddress = oscAddress.join('::').replace(/::(\d+)/g, "[$1]").replace(/s-h/, "s/h");
     }
     
     if (pattrAddress == NOT_TRANSFORMED) {
-        pattrAddress = address.join('::').replace(/(\d+)/g, "[$1]");
+        pattrAddress = oscAddress.join('::').replace(/(\d+)/g, "[$1]");
     }
     
     outlet (

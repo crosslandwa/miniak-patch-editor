@@ -1,5 +1,9 @@
 autowatch = 1;
 
+var oscAddress       = 'NONE';
+var pattrAddress     = 'NONE';
+var lastPattrAddress = 'NONE';
+
 /**
  * Take an pattr path and some data
  *
@@ -8,11 +12,17 @@ autowatch = 1;
  */
 function anything()
 {
-    var pattrData    = arrayfromargs(messagename, arguments);
-    var pattrAddress = pattrData.shift();
+    var pattrData = arrayfromargs(messagename, arguments);
+    pattrAddress  = pattrData.shift();
+    
+    if (pattrAddress != lastPattrAddress) {
+        post('recalculating iscAddress\n');
+        lastPattrAddress = pattrAddress;
+        oscAddress       = '/' + pattrAddress.replace(/[\[|:]+/g, "/").replace(/\]/g, "").replace(/s\/h/, "s-h")
+    }
     outlet (
         0,
-        '/' + pattrAddress.replace(/[\[|:]+/g, "/").replace(/\]/g, "").replace(/s\/h/, "s-h"),
+        oscAddress,
         pattrData
     );
 }
