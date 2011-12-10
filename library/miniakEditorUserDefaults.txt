@@ -1,1 +1,1 @@
-midiports::midiFromMiniak, "to MaxMSP 1";midiports::midiToMiniak, "from MaxMSP 2";patchesFolderPath, WACDRIVE:/Dropbox/Max-Patches/wac5/MiniakPatchEditor/patches/;
+midiports::midiFromMiniak, "to MaxMSP 1";midiports::midiToMiniak, "from MaxMSP 2";patchesFolderPath, WACDRIVE:/Dropbox/Max-Patches/wac5/MiniakPatchEditor/patches/;remoteControl::oscClientTargetIpAddress, 192.0.0.5;remoteControl::oscClientPort, 9000;remoteControl::oscServerPort, 8000;
