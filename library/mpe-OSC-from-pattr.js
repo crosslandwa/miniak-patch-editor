@@ -16,7 +16,6 @@ function anything()
     pattrAddress  = pattrData.shift();
     
     if (pattrAddress != lastPattrAddress) {
-        post('recalculating iscAddress\n');
         lastPattrAddress = pattrAddress;
         oscAddress       = '/' + pattrAddress.replace(/[\[|:]+/g, "/").replace(/\]/g, "").replace(/s\/h/, "s-h")
     }
