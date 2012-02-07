@@ -50,17 +50,17 @@ function anything()
         && (oscAddress.indexOf('fx') >= 0)
         && (oscAddress.indexOf('Type') >= 0)
     ) {
-        pattrAddress = oscAddress.join('::').replace(/::(\d+)/g, "[$1]");
+        pattrAddress = oscAddress.join('::').replace(/::([-]?\d+)/g, "[$1]");
     }
     
     if ((pattrAddress == NOT_TRANSFORMED)
         && (oscAddress.indexOf('s-h') >= 0)
     ) {
-        pattrAddress = oscAddress.join('::').replace(/::(\d+)/g, "[$1]").replace(/s-h/, "s/h");
+        pattrAddress = oscAddress.join('::').replace(/::([-]?\d+)/g, "[$1]").replace(/s-h/, "s/h");
     }
     
     if (pattrAddress == NOT_TRANSFORMED) {
-        pattrAddress = oscAddress.join('::').replace(/(\d+)/g, "[$1]");
+        pattrAddress = oscAddress.join('::').replace(/([-]?\d+)/g, "[$1]");
     }
     
     outlet (
