@@ -37,7 +37,7 @@ Other Sources:
 Filters:
 /filter/SeriesLevel 0->100
 /filter/1/Type 0->20
-/filter/1/Frequency 0->920
+/filter/1/Frequency 0->1023 (Certain filter types only support a max of 920)
 /filter/1/Resonance 0->100
 /filter/1/Keytrack -100->200
 /filter/1/EnvAmount -100->100
@@ -47,7 +47,7 @@ Filters:
 
 /filter/2/Offset 0->20
 /filter/2/Type 0->20
-/filter/2/Frequency/Absolute 0->920
+/filter/2/Frequency/Absolute 0->1023 (Certain filter types only support a max of 920)
 /filter/2/Frequency/Relative -400->400
 /filter/2/Resonance 0->100
 /filter/2/Keytrack -100->200
