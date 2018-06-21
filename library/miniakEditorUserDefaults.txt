@@ -1,6 +1,0 @@
-midiports::midiFromMiniak, "AudioFire4 (2934) Plug 1";
-midiports::midiToMiniak, "AudioFire4 (2934) Plug 1";
-patchesFolderPath, D:/Dropbox/Max-Patches/wac5/MiniakPatchEditor/patches/;
-remoteControl::oscClientTargetIpAddress, 127.0.0.1;
-remoteControl::oscClientPort, 9000;
-remoteControl::oscServerPort, 8000;
