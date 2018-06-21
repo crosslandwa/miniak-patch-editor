@@ -3,11 +3,13 @@ MaxMSP patch editor for the Akai Miniak
 
 ## Use
 - Install [Max MSP](https://cycling74.com/products/max/) on your Windows/OS X computer
- - Note the 'free trial' of Max MSP is sufficient to run this patch
+  - Note the 'free trial' of Max MSP is sufficient to run this patch
 - Download this code
 - Open `MiniakPatchEditor.maxpat` in the Max application
 - Follow the instructions in the [documentation](./documentation) to use the editor
 
+## Credits
+Touch OSC template by Adam Neddo
 
 ## History
 
